@@ -3,7 +3,10 @@ import pokemonDataJson from 'data/pokemon.data'
 import Avatar from 'components/Avatar'
 import logo from 'assets/logo.svg'
 import Search from 'assets/search.svg'
-import Card from './Card'
+import Card from '../components/Card'
+import Single from 'assets/single'
+import Multiple from 'assets/multiple'
+import clsx from 'clsx'
 
 interface PokemonBaseStats {
   HP: number
@@ -31,6 +34,10 @@ function App() {
   const [pokemonData, setPokemonData] = React.useState<Pokemon[]>([])
   const [loading, setLoading] = React.useState<boolean>(true)
   const [sortOption, setSortOption] = React.useState<string>('default')
+  const [searchTerm, setSearchTerm] = React.useState<string>('')
+  const [gridView, setGridView] = React.useState<'single' | 'multiple'>(
+    'multiple'
+  )
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -49,18 +56,30 @@ function App() {
   }, [])
 
   const sortedPokemon = React.useMemo<Pokemon[]>(() => {
+    let result = [...pokemonData]
+
+    if (searchTerm) {
+      result = result.filter((pokemon) =>
+        pokemon.name.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+      )
+    }
+
     switch (sortOption) {
       case 'as':
-        return [...pokemonData].sort((a: any, b: any) => a.id - b.id)
+        return result.sort((a: any, b: any) => a.id - b.id)
       case 'ds':
-        return [...pokemonData].sort((a: any, b: any) => b.id - a.id)
+        return result.sort((a: any, b: any) => b.id - a.id)
       default:
-        return pokemonData
+        return result
     }
-  }, [pokemonData, sortOption])
+  }, [pokemonData, sortOption, searchTerm])
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortOption(e.target.value)
+  }
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
   }
 
   return (
@@ -73,9 +92,9 @@ function App() {
             <input
               type="text"
               placeholder="Search Pokémon..."
-              // value={searchTerm}
-              // onChange={handleSearchChange}
-              className="bg-gray-700 text-white pl-0 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="bg-gray-700 text-white pl-2 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
             />
 
             {/* <Avatar size="small" src={Search} /> */}
@@ -97,27 +116,58 @@ function App() {
           </form>
           <div className="w-2/6">
             <div className="inline-flex rounded-md shadow-xs">
-              <a className="px-4 py-2 text-sm font-medium  bg-[#0C1231] border border-gray-200 rounded-s-lg hover:bg-[#0C1231] focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-white ">
-                Profile
-              </a>
-
-              <a
-                href="#"
-                className="px-4 py-2 text-sm font-medium  bg-[#3D4466] border border-gray-200 rounded-e-lg hover:bg-[#0C1231] hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-white"
+              {/* SIngle Card */}
+              <button
+                onClick={() => setGridView('single')}
+                className={clsx(
+                  'px-4 py-2 text-sm font-medium border border-gray-200 rounded-s-lg',
+                  'focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-white',
+                  gridView === 'single'
+                    ? 'bg-[#0C1231] text-white'
+                    : 'bg-[#3D4466] text-gray-300 hover:bg-[#0C1231] hover:text-white'
+                )}
               >
-                Messages
-              </a>
+                <Single />
+              </button>
+
+              {/* Multiple Card */}
+
+              <button
+                onClick={() => setGridView('multiple')}
+                className={clsx(
+                  'px-4 py-2 text-sm font-medium border border-gray-200 rounded-e-lg',
+                  'focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-white',
+                  gridView === 'multiple'
+                    ? 'bg-[#0C1231] text-white'
+                    : 'bg-[#3D4466] text-gray-300 hover:bg-[#0C1231] hover:text-white'
+                )}
+              >
+                <Multiple />
+              </button>
             </div>
           </div>
         </div>
         {loading ? (
           <p>Loading Pokedex...</p>
         ) : (
-          <div className="grid grid-cols-2 gap-5">
-            {sortedPokemon?.map((pokemon: Pokemon) => (
-              <Card pokemon={pokemon} key={pokemon.id} />
-            ))}
-          </div>
+          <>
+            {sortedPokemon?.length === 0 ? (
+              <p className="text-center py-8">
+                No Pokémon found matching "{searchTerm}"
+              </p>
+            ) : (
+              <div
+                className={clsx(
+                  'grid gap-5',
+                  gridView === 'single' ? 'grid-cols-1' : 'grid-cols-2'
+                )}
+              >
+                {sortedPokemon?.map((pokemon: Pokemon) => (
+                  <Card pokemon={pokemon} key={pokemon.id} />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

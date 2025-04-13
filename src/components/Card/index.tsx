@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 
-import type { Pokemon } from 'components/App'
+import type { Pokemon } from 'page/App'
+import { Link } from 'react-router'
 
 interface CardProps {
   pokemon: Pokemon
@@ -19,7 +20,13 @@ const typeClasses = {
 
 export default function Card({ pokemon }: CardProps) {
   return (
-    <div className="w-full h-auto rounded-md bg-white flex flex-col justify-between text-black px-4 py-2 font-semibold text-xl">
+    <Link
+      to={`/pokemon/${pokemon.id}`}
+      className={clsx(
+        'w-full h-auto rounded-md bg-white flex flex-col justify-between text-black px-4 py-5 font-semibold text-xl cursor-pointer',
+        'block'
+      )}
+    >
       <div className="flex justify-between">
         <div className="flex gap-2">
           {pokemon?.type.map((item) => (
@@ -46,6 +53,6 @@ export default function Card({ pokemon }: CardProps) {
       <div className="text-center">
         <p className="">{pokemon?.name}</p>
       </div>
-    </div>
+    </Link>
   )
 }

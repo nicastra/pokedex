@@ -1,4 +1,4 @@
-import { Pokemon } from 'components/App'
+import { Pokemon } from 'page/App'
 
 const pokemonData: Pokemon[] = [
   {
