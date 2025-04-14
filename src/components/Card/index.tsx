@@ -41,7 +41,7 @@ export default function Card({ pokemon }: CardProps) {
             </div>
           ))}
         </div>
-        <p>#{pokemon.id}</p>
+        <p className="text-2xl text-gray-400">#{pokemon.id}</p>
       </div>
       <div className="py-8">
         <img
