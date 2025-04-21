@@ -4,6 +4,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import 'tailwindcss/tailwind.css'
 import App from 'page/App'
 import PokemonDetail from 'page/PokemonDetail'
+import { Provider } from 'react-redux'
+import store from 'store'
 
 const container = document.getElementById('root') as HTMLDivElement
 const root = createRoot(container)
@@ -20,6 +22,8 @@ const router = createBrowserRouter([
 
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </React.StrictMode>
 )

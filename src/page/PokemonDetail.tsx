@@ -1,3 +1,4 @@
+import * as React from 'react'
 import Avatar from 'components/Avatar'
 import logo from 'assets/logo.svg'
 import { Link, useParams } from 'react-router'
@@ -6,7 +7,9 @@ import clsx from 'clsx'
 
 export default function PokemonDetail() {
   const { id } = useParams<{ id: string }>()
-  const pokemon = pokemonData.find((p) => p.id === Number(id))
+  const pokemon = React.useMemo(() => {
+    return pokemonData.find((p) => p.id === Number(id))
+  }, [id])
 
   const typeClasses = {
     normal: 'bg-gray-300 text-gray-800',
